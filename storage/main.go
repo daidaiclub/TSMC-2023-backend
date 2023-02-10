@@ -62,6 +62,25 @@ func main() {
 	}
 	defer db.Close()
 
+	// create data table if not exist
+	_, table_check := db.Query("SELECT * FROM data")
+	if table_check != nil {
+		_, err = db.Exec(`
+			CREATE TABLE data (
+				location text,
+				timestamp text,
+				material integer,
+				signature text,
+				A integer,
+				B integer,
+				C integer,
+				D integer);`,
+		)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	r := gin.Default()
 
 	api := r.Group("/api")
