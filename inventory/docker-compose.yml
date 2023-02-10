@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  tsmc-inventory_backend:
+    build: ./app
+    restart: always
+    ports:
+      - 8200:8200
