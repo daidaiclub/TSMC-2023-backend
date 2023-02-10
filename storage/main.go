@@ -51,7 +51,7 @@ type Report struct {
 // }
 
 func get_db() (*sql.DB, error) {
-	db, err := sql.Open("postgres", "postgresql://postgres:123456@localhost:5432/postgres?sslmode=disable")
+	db, err := sql.Open("postgres", "postgresql://user:123456@postgres:5432/tsmc-storage?sslmode=disable")
 	return db, err
 }
 
