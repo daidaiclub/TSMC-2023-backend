@@ -7,6 +7,7 @@ import (
 	"io"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 )
 
 type Order struct {
@@ -87,9 +88,8 @@ func main() {
 		Record.Signature = inventory.Signature
 		Record.Data = order.Data
 
-		
-		
-
+		//todo 資料
+	
 
 		c.JSON(200, gin.H{
 			"message" : "success",
