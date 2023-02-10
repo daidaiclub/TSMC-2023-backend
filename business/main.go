@@ -92,9 +92,7 @@ func main() {
 
 
 		c.JSON(200, gin.H{
-			"location": order.Location,
-			"time":     order.Time,
-			"Record":     Record,
+			"message" : "success",
 		})
 	})
 
