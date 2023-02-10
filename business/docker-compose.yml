@@ -32,8 +32,6 @@ services:
     restart: always
     ports:
       - 8100:8100
-    volumes:
-      - ./app:/app
     networks:
       - tsmc-business
     environment:
