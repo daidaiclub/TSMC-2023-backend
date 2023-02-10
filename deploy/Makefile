@@ -19,10 +19,10 @@ storage:
 	docker-compose -f ../storage/docker-compose.yml up -d
 
 proxy:
-	docker-compose -f ../proxy/docker-compose.yml up -d
+	docker-compose -f ../LoadBalance/docker-compose.yml up -d
 
 down:
 	docker-compose -f ../business/docker-compose.yml down
 	docker-compose -f ../inventory/docker-compose.yml down
 	docker-compose -f ../storage/docker-compose.yml down
-	docker-compose -f ../proxy/docker-compose.yml down
+	docker-compose -f ../LoadBalance/docker-compose.yml down
