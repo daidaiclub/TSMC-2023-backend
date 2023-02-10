@@ -6,7 +6,6 @@ import (
 	"time"
 	"io"
 	"encoding/json"
-	"encoding/gob"
 	"github.com/gin-gonic/gin"
 )
 
@@ -52,17 +51,19 @@ func main() {
 		var order Order
 		c.BindJSON(&order)
 
-		var b bytes.Buffer
-		enc := gob.NewEncoder(&b)
-		if err := enc.Encode(c); err != nil {
-			panic(err)
+
+		values := map[string]interface{}{
+			"location": order.Location,
+			"timestamp": order.Time,
+			"data": order.Data,
 		}
 
+		jsonValue, _ := json.Marshal(values)
 
 		res, err := http.Post(
 			"http://localhost:8200/api/order",
 			"application/json",
-			bytes.NewReader([]byte(b.Bytes())),
+			bytes.NewBuffer(jsonValue),
 		)
 
 		if err != nil {

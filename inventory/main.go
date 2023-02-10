@@ -37,7 +37,6 @@ func main() {
 	api.POST("/order", func(c *gin.Context) {
 		var order Order
 		c.BindJSON(&order)
-		fmt.Println(order)
 		var inventory Inventory
 		total := order.Data.A + order.Data.B + order.Data.C + order.Data.D
 		inventory.Material = order.Data.A * 3 + order.Data.B * 2 + order.Data.C * 4 + order.Data.D * 10
