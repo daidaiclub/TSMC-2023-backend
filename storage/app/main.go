@@ -136,7 +136,7 @@ func main() {
 			`SELECT location, SUBSTRING(timestamp, 1, 10) AS date, COUNT(*) AS count, SUM(material) AS material, SUM(a) AS a, SUM(b) AS b, SUM(c) AS c, SUM(d) AS d
 				FROM data 
 				WHERE location = $1 AND SUBSTRING(timestamp, 1, 10) = $2
-				GROUP BY location, timestamp`, location, date)
+				GROUP BY location, SUBSTRING(timestamp, 1, 10)`, location, date)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
