@@ -2,14 +2,15 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/cache/v8"
+	"github.com/go-redis/redis/v8"
 	"io"
 	"net/http"
+	"os"
 	"time"
-	"context"
-	"github.com/go-redis/redis/v8"
-	"github.com/go-redis/cache/v8"
 )
 
 type Order struct {
@@ -49,32 +50,33 @@ type Report struct {
 	D        uint64 `json:"d"`
 }
 
-// func OrderToByteArray(Order order) []byte {
-
-// }
-
-
 var flag1, flag2 bool
+
+// get the url from the environment variable
+var INVENTORY_URL, STORAGE_URL, OTHER_URL string
+
 func main() {
+	INVENTORY_URL = os.Getenv("INVENTORY_URL")
+	STORAGE_URL = os.Getenv("STORAGE_URL")
+	OTHER_URL = os.Getenv("OTHER_URL")
+
 	r := gin.Default()
 	flag1 = true
 	flag2 = true
 	api := r.Group("/api")
 
 	//redis todo
-	 ring := redis.NewRing(&redis.RingOptions{
-        Addrs: map[string]string{
-            "server1": ":6379",
-            "server2": ":6380",
-        },
-    })
+	ring := redis.NewRing(&redis.RingOptions{
+		Addrs: map[string]string{
+			"server1": "tsmc-business_redis1:6379",
+			"server2": "tsmc-business_redis2:6380",
+		},
+	})
 
-    mycache := cache.New(&cache.Options{
-        Redis:      ring,
-        LocalCache: cache.NewTinyLFU(1000, time.Minute),
-    })
-
-    
+	mycache := cache.New(&cache.Options{
+		Redis:      ring,
+		LocalCache: cache.NewTinyLFU(1000, time.Minute),
+	})
 
 	api.POST("/order", func(c *gin.Context) {
 		inventoryEnd := true
@@ -91,7 +93,7 @@ func main() {
 		var err error
 		for inventoryEnd {
 			res, err = http.Post(
-				"http://localhost:8200/api/order",
+				INVENTORY_URL+"/order",
 				"application/json",
 				bytes.NewBuffer(jsonValue),
 			)
@@ -112,14 +114,13 @@ func main() {
 		sitemap_s := []byte(string(sitemap))
 		json.Unmarshal(sitemap_s, &inventory)
 
-
 		var Record Record
 		Record.Location = order.Location
 		Record.Time = order.Time
 		Record.Material = inventory.Material
 		Record.Signature = inventory.Signature
 		Record.Data = order.Data
-	
+
 		values = map[string]interface{}{
 			"location":  Record.Location,
 			"timestamp": Record.Time,
@@ -127,12 +128,12 @@ func main() {
 			"signature": Record.Signature,
 			"data":      Record.Data,
 		}
-		
+
 		jsonValue, _ = json.Marshal(values)
 		storageEnd := true
 		for storageEnd {
-			res, err = http.Post(
-				"http://localhost:8300/api/records",
+			_, err = http.Post(
+				STORAGE_URL+"/records",
 				"application/json",
 				bytes.NewBuffer(jsonValue),
 			)
@@ -143,7 +144,7 @@ func main() {
 			}
 			storageEnd = false
 		}
-		
+
 		c.JSON(200, gin.H{
 			"message": "success",
 		})
@@ -152,7 +153,7 @@ func main() {
 	api.GET("/record", func(c *gin.Context) {
 		for flag2 {
 			flag1 = false
-			res, err := http.Get("http://localhost:8100/api/check")
+			res, err := http.Get(OTHER_URL)
 			if err != nil {
 				time.Sleep(50 * time.Millisecond)
 				continue
@@ -170,12 +171,12 @@ func main() {
 		}
 		location := c.Query("location")
 		timestamp := c.Query("date")
-		
-			//redis todo
+
+		//redis todo
 
 		recordend := true
 		for recordend {
-			res, err := http.Get("http://localhost:8300/api/records?location=" + location + "&date=" + timestamp)
+			res, err := http.Get(STORAGE_URL + "/records?location=" + location + "&date=" + timestamp)
 			if err != nil {
 				time.Sleep(20 * time.Second)
 				continue
@@ -198,7 +199,7 @@ func main() {
 	api.GET("/report", func(c *gin.Context) {
 		for flag2 {
 			flag1 = false
-			res, err := http.Get("http://localhost:8100/api/check")
+			res, err := http.Get(OTHER_URL)
 			if err != nil {
 				continue
 			}
@@ -216,28 +217,28 @@ func main() {
 		timestamp := c.Query("date")
 
 		//redis todo
-		key := location + timestamp
-		var wanted Report
-		ctx := context.TODO()
-		if err := mycache.Get(ctx, key, &wanted); err == nil {
-			c.JSON(200, gin.H{
-				"location" : wanted.Location,
-				"date" : wanted.Date,
-				"material" : wanted.Material,
-				"count" : wanted.Count,
-				"a" : wanted.A,
-				"b" : wanted.B,
-				"c" : wanted.C,
-				"d" : wanted.D,
-			})
-		}
-    // var wanted Object
-    // if err := mycache.Get(ctx, key, &wanted); err == nil {
-    //     fmt.Println(wanted)
-    // }
+		// key := location + timestamp
+		// var wanted Report
+		// ctx := context.TODO()
+		// if err := mycache.Get(ctx, key, &wanted); err == nil {
+		// 	c.JSON(200, gin.H{
+		// 		"location": wanted.Location,
+		// 		"date":     wanted.Date,
+		// 		"material": wanted.Material,
+		// 		"count":    wanted.Count,
+		// 		"a":        wanted.A,
+		// 		"b":        wanted.B,
+		// 		"c":        wanted.C,
+		// 		"d":        wanted.D,
+		// 	})
+		// }
+		// var wanted Object
+		// if err := mycache.Get(ctx, key, &wanted); err == nil {
+		//     fmt.Println(wanted)
+		// }
 		reportend := true
 		for reportend {
-			res, err := http.Get("http://localhost:8300/api/report?location=" + location + "&date=" + timestamp)
+			res, err := http.Get(STORAGE_URL + "/report?location=" + location + "&date=" + timestamp)
 			if err != nil {
 				time.Sleep(20 * time.Second)
 				continue
@@ -253,36 +254,36 @@ func main() {
 			if dataMap_m["message"] == "success" {
 				reportend = false
 			}
-			ctx := context.TODO()
-			key := location + timestamp
-			obj := &Report{
-				Location: dataMap_m["location"].(string),
-				Date: dataMap_m["date"].(string),
-				Count: dataMap_m["count"].(uint64),
-				Material: dataMap_m["material"].(uint64),
-				A: dataMap_m["a"].(uint64),
-				B: dataMap_m["b"].(uint64),
-				C: dataMap_m["c"].(uint64),
-				D: dataMap_m["d"].(uint64),
-			}
+			// ctx := context.TODO()
+			// key := location + timestamp
+			// obj := &Report{
+			// 	Location: dataMap_m["location"].(string),
+			// 	Date:     dataMap_m["date"].(string),
+			// 	Count:    dataMap_m["count"].(uint64),
+			// 	Material: dataMap_m["material"].(uint64),
+			// 	A:        dataMap_m["a"].(uint64),
+			// 	B:        dataMap_m["b"].(uint64),
+			// 	C:        dataMap_m["c"].(uint64),
+			// 	D:        dataMap_m["d"].(uint64),
+			// }
 
-			if err := mycache.Set(&cache.Item{
-					Ctx:   ctx,
-					Key:   key,
-					Value: obj,
-					TTL:   time.Hour,
-			}); err != nil {
-					panic(err)
-			}
+			// if err := mycache.Set(&cache.Item{
+			// 	Ctx:   ctx,
+			// 	Key:   key,
+			// 	Value: obj,
+			// 	TTL:   time.Hour,
+			// }); err != nil {
+			// 	panic(err)
+			// }
 			c.JSON(200, gin.H{
-				"location": dataMap_m["location"],
-				"timestamp":     dataMap_m["date"],
-				"count": dataMap_m["count"],
-				"material": dataMap_m["material"],
-				"a": dataMap_m["a"],
-				"b": dataMap_m["b"],
-				"c": dataMap_m["c"],
-				"d": dataMap_m["d"],
+				"location":  dataMap_m["location"],
+				"timestamp": dataMap_m["date"],
+				"count":     dataMap_m["count"],
+				"material":  dataMap_m["material"],
+				"a":         dataMap_m["a"],
+				"b":         dataMap_m["b"],
+				"c":         dataMap_m["c"],
+				"d":         dataMap_m["d"],
 			})
 		}
 	})

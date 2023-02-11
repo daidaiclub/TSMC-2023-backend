@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  # tsmc-business_redis1:
+  #   image: redis:5.0.5-alpine
+  #   container_name: tsmc-business_redis1
+  #   restart: always
+  #   ports:
+  #     - 6379:6379
+  #   volumes:
+  #     - ./redis/data:/data
+  #     - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
+  #   command: redis-server /usr/local/etc/redis/redis.conf
+  #   networks:
+  #     - tsmc-business
+  
+  # tsmc-business_redis2:
+  #   image: redis:5.0.5-alpine
+  #   container_name: tsmc-business_redis2
+  #   restart: always
+  #   ports:
+  #     - 6380:6379
+  #   volumes:
+  #     - ./redis/data2:/data
+  #     - ./redis/conf/redis2.conf:/usr/local/etc/redis/redis.conf
+  #   command: redis-server /usr/local/etc/redis/redis.conf
+  #   networks:
+  #     - tsmc-business
+  
+  tsmc-business_backend:
+    build: ./app
+    restart: always
+    ports:
+      - 8100:8100
+    networks:
+      - tsmc-business
+    environment:
+      - INVENTORY_URL=http://${INVENTORY_URL}:8200/api
+      - STORAGE_URL=http://${STORAGE_URL}:8300/api
+      - OTHER_URL=http://${OTHER_URL}:8100/api/check
+    # depends_on:
+    #   - tsmc-business_redis1
+    #   - tsmc-business_redis2
+
+networks:
+  tsmc-business:
+    driver: bridge

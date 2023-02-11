@@ -2,25 +2,19 @@ version: '3'
 services:
   tsmc-storage_db:
     image: postgres
+    restart: always
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: tsmc-storage
     ports:
       - 5432:5432
-    # networks:
-    #   - tsmc-storage
     hostname: postgres
 
   tsmc-storage:
-    image: tsmc-storage
+    build: ./app
+    restart: always
     ports:
       - 8300:8300
     depends_on:
       - tsmc-storage_db
-    # networks:
-    #   - tsmc-storage
-
-# networks:
-#   tsmc-storage:
-#     driver: bridge
