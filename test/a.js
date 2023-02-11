@@ -10,7 +10,7 @@ export const options = {
 export default function () {
   let ret = {
     "location": "L1",
-    "timestamp": "2011-01-01T20:18:56.424+08:00",
+    "timestamp": new Date(),
     "data": {
         "a": 18,
         "b": 2,
