@@ -190,9 +190,12 @@ func main() {
 			var dataMap_m map[string]interface{}
 			json.Unmarshal(dataMap_s, &dataMap_m)
 			recordend = false
-			c.JSON(200, gin.H{ // todo
-				"message": dataMap_m,
-			})
+
+			// dataMap_m to array
+			var dataMap_a []interface{}
+			dataMap_a = dataMap_m["data"].([]interface{})
+
+			c.JSON(200, dataMap_a)
 		}
 	})
 
