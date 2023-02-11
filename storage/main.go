@@ -153,8 +153,14 @@ func main() {
 		}
 
 		c.JSON(200, gin.H{
-			"message": "success",
-			"data":    report,
+			"location": report.Location,
+			"date":     report.Date,
+			"count":    report.Count,
+			"material": report.Material,
+			"a":        report.A,
+			"b":        report.B,
+			"c":        report.C,
+			"d":        report.D,
 		})
 	})
 
