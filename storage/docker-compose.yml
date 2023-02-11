@@ -2,6 +2,7 @@ version: '3'
 services:
   tsmc-storage_db:
     image: postgres
+    restart: always
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: 123456
@@ -12,6 +13,7 @@ services:
 
   tsmc-storage:
     build: ./app
+    restart: always
     ports:
       - 8300:8300
     depends_on:
