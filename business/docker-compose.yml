@@ -1,31 +1,31 @@
 version: '3'
 
 services:
-  tsmc-business_redis1:
-    image: redis:5.0.5-alpine
-    container_name: tsmc-business_redis1
-    restart: always
-    ports:
-      - 6379:6379
-    volumes:
-      - ./redis/data:/data
-      - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf
-    networks:
-      - tsmc-business
+  # tsmc-business_redis1:
+  #   image: redis:5.0.5-alpine
+  #   container_name: tsmc-business_redis1
+  #   restart: always
+  #   ports:
+  #     - 6379:6379
+  #   volumes:
+  #     - ./redis/data:/data
+  #     - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
+  #   command: redis-server /usr/local/etc/redis/redis.conf
+  #   networks:
+  #     - tsmc-business
   
-  tsmc-business_redis2:
-    image: redis:5.0.5-alpine
-    container_name: tsmc-business_redis2
-    restart: always
-    ports:
-      - 6380:6379
-    volumes:
-      - ./redis/data2:/data
-      - ./redis/conf/redis2.conf:/usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf
-    networks:
-      - tsmc-business
+  # tsmc-business_redis2:
+  #   image: redis:5.0.5-alpine
+  #   container_name: tsmc-business_redis2
+  #   restart: always
+  #   ports:
+  #     - 6380:6379
+  #   volumes:
+  #     - ./redis/data2:/data
+  #     - ./redis/conf/redis2.conf:/usr/local/etc/redis/redis.conf
+  #   command: redis-server /usr/local/etc/redis/redis.conf
+  #   networks:
+  #     - tsmc-business
   
   tsmc-business_backend:
     build: ./app

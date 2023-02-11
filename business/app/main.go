@@ -217,21 +217,21 @@ func main() {
 		timestamp := c.Query("date")
 
 		//redis todo
-		key := location + timestamp
-		var wanted Report
-		ctx := context.TODO()
-		if err := mycache.Get(ctx, key, &wanted); err == nil {
-			c.JSON(200, gin.H{
-				"location": wanted.Location,
-				"date":     wanted.Date,
-				"material": wanted.Material,
-				"count":    wanted.Count,
-				"a":        wanted.A,
-				"b":        wanted.B,
-				"c":        wanted.C,
-				"d":        wanted.D,
-			})
-		}
+		// key := location + timestamp
+		// var wanted Report
+		// ctx := context.TODO()
+		// if err := mycache.Get(ctx, key, &wanted); err == nil {
+		// 	c.JSON(200, gin.H{
+		// 		"location": wanted.Location,
+		// 		"date":     wanted.Date,
+		// 		"material": wanted.Material,
+		// 		"count":    wanted.Count,
+		// 		"a":        wanted.A,
+		// 		"b":        wanted.B,
+		// 		"c":        wanted.C,
+		// 		"d":        wanted.D,
+		// 	})
+		// }
 		// var wanted Object
 		// if err := mycache.Get(ctx, key, &wanted); err == nil {
 		//     fmt.Println(wanted)
@@ -254,27 +254,27 @@ func main() {
 			if dataMap_m["message"] == "success" {
 				reportend = false
 			}
-			ctx := context.TODO()
-			key := location + timestamp
-			obj := &Report{
-				Location: dataMap_m["location"].(string),
-				Date:     dataMap_m["date"].(string),
-				Count:    dataMap_m["count"].(uint64),
-				Material: dataMap_m["material"].(uint64),
-				A:        dataMap_m["a"].(uint64),
-				B:        dataMap_m["b"].(uint64),
-				C:        dataMap_m["c"].(uint64),
-				D:        dataMap_m["d"].(uint64),
-			}
+			// ctx := context.TODO()
+			// key := location + timestamp
+			// obj := &Report{
+			// 	Location: dataMap_m["location"].(string),
+			// 	Date:     dataMap_m["date"].(string),
+			// 	Count:    dataMap_m["count"].(uint64),
+			// 	Material: dataMap_m["material"].(uint64),
+			// 	A:        dataMap_m["a"].(uint64),
+			// 	B:        dataMap_m["b"].(uint64),
+			// 	C:        dataMap_m["c"].(uint64),
+			// 	D:        dataMap_m["d"].(uint64),
+			// }
 
-			if err := mycache.Set(&cache.Item{
-				Ctx:   ctx,
-				Key:   key,
-				Value: obj,
-				TTL:   time.Hour,
-			}); err != nil {
-				panic(err)
-			}
+			// if err := mycache.Set(&cache.Item{
+			// 	Ctx:   ctx,
+			// 	Key:   key,
+			// 	Value: obj,
+			// 	TTL:   time.Hour,
+			// }); err != nil {
+			// 	panic(err)
+			// }
 			c.JSON(200, gin.H{
 				"location":  dataMap_m["location"],
 				"timestamp": dataMap_m["date"],
