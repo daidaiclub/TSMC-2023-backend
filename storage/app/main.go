@@ -116,7 +116,8 @@ func main() {
 		var records []Record
 		for rows.Next() {
 			var record Record
-			err = rows.Scan(&record.Location, &record.Time, &record.Material, &record.Signature, &record.Data.A, &record.Data.B, &record.Data.C, &record.Data.D)
+			var trash string
+			err = rows.Scan(&record.Location, &record.Time, &trash, &record.Material, &record.Signature, &record.Data.A, &record.Data.B, &record.Data.C, &record.Data.D)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
