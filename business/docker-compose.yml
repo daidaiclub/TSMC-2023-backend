@@ -38,9 +38,9 @@ services:
       - INVENTORY_URL=http://${INVENTORY_URL}:8200/api
       - STORAGE_URL=http://${STORAGE_URL}:8300/api
       - OTHER_URL=http://${OTHER_URL}:8100/api/check
-    depends_on:
-      - tsmc-business_redis1
-      - tsmc-business_redis2
+    # depends_on:
+    #   - tsmc-business_redis1
+    #   - tsmc-business_redis2
 
 networks:
   tsmc-business:
