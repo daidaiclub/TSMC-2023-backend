@@ -277,7 +277,7 @@ func main() {
 			// }
 			c.JSON(200, gin.H{
 				"location":  dataMap_m["location"],
-				"timestamp": dataMap_m["date"],
+				"date": dataMap_m["date"],
 				"count":     dataMap_m["count"],
 				"material":  dataMap_m["material"],
 				"a":         dataMap_m["a"],
