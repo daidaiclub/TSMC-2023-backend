@@ -2,11 +2,11 @@ package main
 
 import (
 	"bytes"
-	"context"
+	// "context"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/cache/v8"
-	"github.com/go-redis/redis/v8"
+	// "github.com/go-redis/cache/v8"
+	// "github.com/go-redis/redis/v8"
 	"io"
 	"net/http"
 	"os"
@@ -66,17 +66,17 @@ func main() {
 	api := r.Group("/api")
 
 	//redis todo
-	ring := redis.NewRing(&redis.RingOptions{
-		Addrs: map[string]string{
-			"server1": "tsmc-business_redis1:6379",
-			"server2": "tsmc-business_redis2:6380",
-		},
-	})
+	// ring := redis.NewRing(&redis.RingOptions{
+	// 	Addrs: map[string]string{
+	// 		"server1": "tsmc-business_redis1:6379",
+	// 		"server2": "tsmc-business_redis2:6380",
+	// 	},
+	// })
 
-	mycache := cache.New(&cache.Options{
-		Redis:      ring,
-		LocalCache: cache.NewTinyLFU(1000, time.Minute),
-	})
+	// mycache := cache.New(&cache.Options{
+	// 	Redis:      ring,
+	// 	LocalCache: cache.NewTinyLFU(1000, time.Minute),
+	// })
 
 	api.POST("/order", func(c *gin.Context) {
 		inventoryEnd := true
