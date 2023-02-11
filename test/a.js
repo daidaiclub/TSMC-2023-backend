@@ -2,17 +2,22 @@ import http from 'k6/http';
 import { sleep } from 'k6';
 
 export const options = {
-  vus: 1, //代表模擬用戶數量
+  vus: 1000, //代表模擬用戶數量
+  rps: 1000, //代表每秒發送請求數量
   duration: '1s', //代表執行時間
 };
 
 export default function () {
-  http.post('http://34.81.206.60/api/order','Content-type: application/json',{
-    "location": "l1",
-    "timestamp": "2023-01-01T20:18:56.424+08:00",
+  let ret = {
+    "location": "L1",
+    "timestamp": new Date(),
     "data": {
         "a": 18,
         "b": 2,
         "c": 6,
-        "d": 28}}); //測試目標網址
+        "d": 28
+    }
+  }
+  http.post('http://34.81.206.60/api/order',JSON.stringify(ret),{headers: { 'Content-Type': 'application/json' },}); //測試目標網址
+  // http.get('http://34.81.206.60/api/report?location=l1&date=2023-01-01')
 }

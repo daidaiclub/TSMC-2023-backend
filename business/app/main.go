@@ -151,24 +151,24 @@ func main() {
 	})
 
 	api.GET("/record", func(c *gin.Context) {
-		for flag2 {
-			flag1 = false
-			res, err := http.Get(OTHER_URL)
-			if err != nil {
-				time.Sleep(50 * time.Millisecond)
-				continue
-			}
-			dataMap, err := io.ReadAll(res.Body)
-			if err != nil {
-				time.Sleep(50 * time.Millisecond)
-				continue
-			}
-			dataMap_s := []byte(string(dataMap))
-			var dataMap_m map[string]interface{}
-			json.Unmarshal(dataMap_s, &dataMap_m)
-			flag2 = dataMap_m["flag"].(bool)
-			time.Sleep(50 * time.Millisecond)
-		}
+		// for flag2 {
+		// 	flag1 = false
+		// 	res, err := http.Get(OTHER_URL)
+		// 	if err != nil {
+		// 		time.Sleep(50 * time.Millisecond)
+		// 		continue
+		// 	}
+		// 	dataMap, err := io.ReadAll(res.Body)
+		// 	if err != nil {
+		// 		time.Sleep(50 * time.Millisecond)
+		// 		continue
+		// 	}
+		// 	dataMap_s := []byte(string(dataMap))
+		// 	var dataMap_m map[string]interface{}
+		// 	json.Unmarshal(dataMap_s, &dataMap_m)
+		// 	flag2 = dataMap_m["flag"].(bool)
+		// 	time.Sleep(50 * time.Millisecond)
+		// }
 		location := c.Query("location")
 		timestamp := c.Query("date")
 
@@ -200,22 +200,22 @@ func main() {
 	})
 
 	api.GET("/report", func(c *gin.Context) {
-		for flag2 {
-			flag1 = false
-			res, err := http.Get(OTHER_URL)
-			if err != nil {
-				continue
-			}
-			dataMap, err := io.ReadAll(res.Body)
-			if err != nil {
-				continue
-			}
-			dataMap_s := []byte(string(dataMap))
-			var dataMap_m map[string]interface{}
-			json.Unmarshal(dataMap_s, &dataMap_m)
-			flag2 = dataMap_m["flag"].(bool)
-			time.Sleep(50 * time.Millisecond)
-		}
+		// for flag2 {
+		// 	flag1 = false
+		// 	res, err := http.Get(OTHER_URL)
+		// 	if err != nil {
+		// 		continue
+		// 	}
+		// 	dataMap, err := io.ReadAll(res.Body)
+		// 	if err != nil {
+		// 		continue
+		// 	}
+		// 	dataMap_s := []byte(string(dataMap))
+		// 	var dataMap_m map[string]interface{}
+		// 	json.Unmarshal(dataMap_s, &dataMap_m)
+		// 	flag2 = dataMap_m["flag"].(bool)
+		// 	time.Sleep(50 * time.Millisecond)
+		// }
 		location := c.Query("location")
 		timestamp := c.Query("date")
 
@@ -280,7 +280,7 @@ func main() {
 			// }
 			c.JSON(200, gin.H{
 				"location":  dataMap_m["location"],
-				"timestamp": dataMap_m["date"],
+				"date":      dataMap_m["date"],
 				"count":     dataMap_m["count"],
 				"material":  dataMap_m["material"],
 				"a":         dataMap_m["a"],

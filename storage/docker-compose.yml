@@ -10,6 +10,8 @@ services:
     ports:
       - 5432:5432
     hostname: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
 
   tsmc-storage:
     build: ./app
@@ -18,3 +20,6 @@ services:
       - 8300:8300
     depends_on:
       - tsmc-storage_db
+
+volumes:
+  postgres-data:
