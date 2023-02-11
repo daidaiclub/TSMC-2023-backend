@@ -69,7 +69,7 @@ func main() {
 			CREATE TABLE data (
 				location text,
 				timestamp text,
-				date text,s
+				date text,
 				material integer,
 				signature text,
 				A integer,
