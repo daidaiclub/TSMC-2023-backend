@@ -69,6 +69,7 @@ func main() {
 			CREATE TABLE data (
 				location text,
 				timestamp text,
+				date text,s
 				material integer,
 				signature text,
 				A integer,
@@ -89,8 +90,8 @@ func main() {
 		var record Record
 		c.BindJSON(&record)
 
-		_, err = db.Exec("INSERT INTO data (location, timestamp, material, signature, a, b, c, d) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-			record.Location, record.Time, record.Material, record.Signature, record.Data.A, record.Data.B, record.Data.C, record.Data.D)
+		_, err = db.Exec("INSERT INTO data (location, timestamp, date, material, signature, a, b, c, d) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+			record.Location, record.Time, record.Time[:10], record.Material, record.Signature, record.Data.A, record.Data.B, record.Data.C, record.Data.D)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -105,7 +106,7 @@ func main() {
 		location := c.Query("location")
 		date := c.Query("date")
 
-		rows, err := db.Query("SELECT * FROM data WHERE location = $1 AND SUBSTRING(timestamp, 1, 10) = $2", location, date)
+		rows, err := db.Query("SELECT * FROM data WHERE location = $1 AND date = $2", location, date)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -133,10 +134,10 @@ func main() {
 		location := c.Query("location")
 		date := c.Query("date")
 		rows, err := db.Query(
-			`SELECT location, SUBSTRING(timestamp, 1, 10) AS date, COUNT(*) AS count, SUM(material) AS material, SUM(a) AS a, SUM(b) AS b, SUM(c) AS c, SUM(d) AS d
+			`SELECT location, date, COUNT(*) AS count, SUM(material) AS material, SUM(a) AS a, SUM(b) AS b, SUM(c) AS c, SUM(d) AS d
 				FROM data 
-				WHERE location = $1 AND SUBSTRING(timestamp, 1, 10) = $2
-				GROUP BY location, SUBSTRING(timestamp, 1, 10)`, location, date)
+				WHERE location = $1 AND date = $2
+				GROUP BY location, date`, location, date)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
