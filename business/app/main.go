@@ -2,11 +2,11 @@ package main
 
 import (
 	"bytes"
-	// "context"
+	"context"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	// "github.com/go-redis/cache/v8"
-	// "github.com/go-redis/redis/v8"
+	"github.com/go-redis/cache/v8"
+	"github.com/go-redis/redis/v8"
 	"io"
 	"net/http"
 	"os"
@@ -66,17 +66,17 @@ func main() {
 	api := r.Group("/api")
 
 	//redis todo
-	// ring := redis.NewRing(&redis.RingOptions{
-	// 	Addrs: map[string]string{
-	// 		"server1": "tsmc-business_redis1:6379",
-	// 		"server2": "tsmc-business_redis2:6380",
-	// 	},
-	// })
+	ring := redis.NewRing(&redis.RingOptions{
+		Addrs: map[string]string{
+			"server1": "tsmc-business_redis1:6379",
+			"server2": "tsmc-business_redis2:6380",
+		},
+	})
 
-	// mycache := cache.New(&cache.Options{
-	// 	Redis:      ring,
-	// 	LocalCache: cache.NewTinyLFU(1000, time.Minute),
-	// })
+	mycache := cache.New(&cache.Options{
+		Redis:      ring,
+		LocalCache: cache.NewTinyLFU(1000, time.Minute),
+	})
 
 	api.POST("/order", func(c *gin.Context) {
 		inventoryEnd := true
@@ -151,24 +151,24 @@ func main() {
 	})
 
 	api.GET("/record", func(c *gin.Context) {
-		// for flag2 {
-		// 	flag1 = false
-		// 	res, err := http.Get(OTHER_URL)
-		// 	if err != nil {
-		// 		time.Sleep(50 * time.Millisecond)
-		// 		continue
-		// 	}
-		// 	dataMap, err := io.ReadAll(res.Body)
-		// 	if err != nil {
-		// 		time.Sleep(50 * time.Millisecond)
-		// 		continue
-		// 	}
-		// 	dataMap_s := []byte(string(dataMap))
-		// 	var dataMap_m map[string]interface{}
-		// 	json.Unmarshal(dataMap_s, &dataMap_m)
-		// 	flag2 = dataMap_m["flag"].(bool)
-		// 	time.Sleep(50 * time.Millisecond)
-		// }
+		for flag2 {
+			flag1 = false
+			res, err := http.Get(OTHER_URL)
+			if err != nil {
+				time.Sleep(50 * time.Millisecond)
+				continue
+			}
+			dataMap, err := io.ReadAll(res.Body)
+			if err != nil {
+				time.Sleep(50 * time.Millisecond)
+				continue
+			}
+			dataMap_s := []byte(string(dataMap))
+			var dataMap_m map[string]interface{}
+			json.Unmarshal(dataMap_s, &dataMap_m)
+			flag2 = dataMap_m["flag"].(bool)
+			time.Sleep(50 * time.Millisecond)
+		}
 		location := c.Query("location")
 		timestamp := c.Query("date")
 
@@ -217,25 +217,25 @@ func main() {
 		timestamp := c.Query("date")
 
 		//redis todo
-		// key := location + timestamp
-		// var wanted Report
-		// ctx := context.TODO()
-		// if err := mycache.Get(ctx, key, &wanted); err == nil {
-		// 	c.JSON(200, gin.H{
-		// 		"location": wanted.Location,
-		// 		"date":     wanted.Date,
-		// 		"material": wanted.Material,
-		// 		"count":    wanted.Count,
-		// 		"a":        wanted.A,
-		// 		"b":        wanted.B,
-		// 		"c":        wanted.C,
-		// 		"d":        wanted.D,
-		// 	})
-		// }
-		// var wanted Object
-		// if err := mycache.Get(ctx, key, &wanted); err == nil {
-		//     fmt.Println(wanted)
-		// }
+		key := location + timestamp
+		var wanted Report
+		ctx := context.TODO()
+		if err := mycache.Get(ctx, key, &wanted); err == nil {
+			c.JSON(200, gin.H{
+				"location": wanted.Location,
+				"date":     wanted.Date,
+				"material": wanted.Material,
+				"count":    wanted.Count,
+				"a":        wanted.A,
+				"b":        wanted.B,
+				"c":        wanted.C,
+				"d":        wanted.D,
+			})
+		}
+		var wanted Object
+		if err := mycache.Get(ctx, key, &wanted); err == nil {
+		    fmt.Println(wanted)
+		}
 		reportend := true
 		for reportend {
 			res, err := http.Get(STORAGE_URL + "/report?location=" + location + "&date=" + timestamp)
@@ -254,27 +254,27 @@ func main() {
 			if dataMap_m["message"] == "success" {
 				reportend = false
 			}
-			// ctx := context.TODO()
-			// key := location + timestamp
-			// obj := &Report{
-			// 	Location: dataMap_m["location"].(string),
-			// 	Date:     dataMap_m["date"].(string),
-			// 	Count:    dataMap_m["count"].(uint64),
-			// 	Material: dataMap_m["material"].(uint64),
-			// 	A:        dataMap_m["a"].(uint64),
-			// 	B:        dataMap_m["b"].(uint64),
-			// 	C:        dataMap_m["c"].(uint64),
-			// 	D:        dataMap_m["d"].(uint64),
-			// }
+			ctx := context.TODO()
+			key := location + timestamp
+			obj := &Report{
+				Location: dataMap_m["location"].(string),
+				Date:     dataMap_m["date"].(string),
+				Count:    dataMap_m["count"].(uint64),
+				Material: dataMap_m["material"].(uint64),
+				A:        dataMap_m["a"].(uint64),
+				B:        dataMap_m["b"].(uint64),
+				C:        dataMap_m["c"].(uint64),
+				D:        dataMap_m["d"].(uint64),
+			}
 
-			// if err := mycache.Set(&cache.Item{
-			// 	Ctx:   ctx,
-			// 	Key:   key,
-			// 	Value: obj,
-			// 	TTL:   time.Hour,
-			// }); err != nil {
-			// 	panic(err)
-			// }
+			if err := mycache.Set(&cache.Item{
+				Ctx:   ctx,
+				Key:   key,
+				Value: obj,
+				TTL:   time.Hour,
+			}); err != nil {
+				panic(err)
+			}
 			c.JSON(200, gin.H{
 				"location":  dataMap_m["location"],
 				"date":      dataMap_m["date"],
