@@ -232,17 +232,7 @@ func main() {
 				"d":        wanted.D,
 			})
 		}
-		if err := mycache.Get(ctx, key, &wanted); err == nil {
-			c.JSON(200, gin.H{
-				"location": wanted.Location,
-				"date":     wanted.Date,
-				"material": wanted.Material,
-				"count":    wanted.Count,
-				"a":        wanted.A,
-				"b":        wanted.B,
-				"c":        wanted.C,
-				"d":        wanted.D,
-			})
+		
 		}
 		reportend := true
 		for reportend {
